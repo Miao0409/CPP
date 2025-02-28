@@ -48,4 +48,6 @@ class Link
         Link link(Link l){};//作为参数或者返回类型，不报错
 };
 ```
+
 - 类的作用域
+-
