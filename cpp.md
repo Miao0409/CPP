@@ -53,3 +53,83 @@ class Link
   - ：：作用域运算符
   - 编译器**处理完类的声明**后才会处理成员函数的定义
   - 先在作用域内找，之后再作用域外部找
+
+## 2025.3.2
+
+### 构造函数
+
+- 初始化列表与赋值的方式 区别,底层效率问题，**重点**
+  1. 如果定义了一个const成员变量，只能通过成员初始化列表
+  2. 如果是引用，也必须通过成员初始化列表
+  3. 另外一个没有定义默认构造函数的类成员
+```cpp
+class ConstRef{
+  public：
+      ConstRef（int n）；
+  private：
+      int i；
+      const int ci；
+      int &ri；
+};
+//wrong
+ConstRef：：ConstRef（int n）
+{
+      i = n; 
+      ci = 6;
+      ri = ri;
+}
+// true
+ConstRef::ConstRef(int n ):
+i(n),
+ci(5),
+ri(ci)
+{}
+```
+- 最好初始化顺序和定义成员变量顺序保持一致
+- 默认构造函数存在两种形式,选一种就可以
+  ` 1.A()=default;2.A(int wt =0,int ht=0):weight(wt),height(ht){};`
+- 委托构造函数：先执行受委托构造函数体的初始化列表，再执行受委托构造函数的函数体；最后执行委托构造函数的函数体
+- 构造函数作用
+  - 尤其是一个类含有另一个类的类对象时，那么另外一个类对象的初始化就要靠另一个类自己的构造函数进行，如果没有对应的构造函数则会报错
+### 类的隐式转换
+- 隐式类型转换
+  1. 通过构造函数（只有一个参数的时候）进行转换
+  2. 通过类型转换运算符operator 进行转换
+  3. explicit关键字阻止编译器进行隐式转换，且只有在类内部使用explicit进行声明才有效
+- 显示类型转换
+  1. `static_cast<Sales_data>(cin),type object = static_cast<type>(another tpye object)`
+### 字面值常量类（重要 没听懂）
+- 字面值类型：算术类型；引用和指针
+- 字面值常量类类型：
+  1. 数据成员都是字面值类型的聚合类
+  2. 包含以下要求的非聚合类
+     1. 数据成员都是字面值类型
+     2. 类必须含有一个constexpr构造函数
+     3. 的
+### 类的静态成员
+- 与类本身有关的成员，和类对象无关
+- static 关键字
+- **静态成员函数不能声明为const，也不包含this指针**
+- 静态成员函数还可以通过作用域解析运算符来调用
+```cpp
+class Acount
+{
+  private:
+    static double rate;
+    static double rate();
+  public:
+    static int a;
+    static int a();
+};
+那么可以通过：：直接访问静态成员
+double r；
+r = Acount：：rate（）；
+也可以通过指针或者引用访问静态成员
+Acount ac1；
+Acount *ac2 = &ac1；
+r = ac1.rate（）；
+r = ac2->rate();
+```
+- static 关键字只在类的内部声明，若要在类外部定义函数，则不需要添加static关键字
+- 绝大部分情况需要在类的外部定义和初始化静态成员，不要在类内部
+- 在类内部定义常量，可以采用枚举类型和static const 类型 可以在类内部定义
